@@ -1,0 +1,79 @@
+/*Fundacion Kinal
+ Centro Educativo Tecnico Laboral Kinal
+ Quinto Perito
+ Quinto Electronica
+ Codigo Tecnico: EB5AM
+ Curso: Taller De Electronica Digital Y Reparacion De Computadoras I
+ Proyecto: PMA DIMMER
+ DEV: Fidel Eliceo Manases Chitay Montufar 
+ Fecha: 30 De Julio del 2024 */
+
+
+#include <Adafruit_NeoPixel.h>
+#include <SoftwareSerial.h>
+
+#define PIN 6          
+#define NUMPIXELS 7   
+
+SoftwareSerial BTSerial(2, 3); 
+
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  Serial.begin(9600);     
+  BTSerial.begin(9600);   
+  strip.begin();           
+  strip.show();           
+}
+
+void loop() {
+  if (BTSerial.available()) { 
+    char Mensaje = BTSerial.read(); 
+    if (Mensaje == '0') {
+      encenderPares(strip.Color(255, 165, 0)); 
+      Serial.println("Encender LEDs Pares en Naranja");
+    } else if (Mensaje == '1') {
+      encenderImpares(strip.Color(0, 255, 0)); 
+      Serial.println("Encender LEDs Impares en Verde");
+    } else if (Mensaje == '2') {
+      apagarPares(); // Apagar LEDs pares
+      Serial.println("Apagar LEDs Pares");
+    } else if (Mensaje == '3') {
+      apagarImpares(); // Apagar LEDs impares
+      Serial.println("Apagar LEDs Impares");
+    }
+  }
+}
+
+
+void encenderPares(uint32_t color) {
+  for (int i = 0; i < NUMPIXELS; i += 2) {
+    strip.setPixelColor(i, color);
+  }
+  strip.show(); 
+}
+
+
+void encenderImpares(uint32_t color) {
+  for (int i = 1; i < NUMPIXELS; i += 2) {
+    strip.setPixelColor(i, color);
+  }
+  strip.show(); 
+}
+
+
+void apagarPares() {
+  for (int i = 0; i < NUMPIXELS; i += 2) {
+    strip.setPixelColor(i, 0); 
+  }
+  strip.show(); 
+}
+
+
+void apagarImpares() {
+  for (int i = 1; i < NUMPIXELS; i += 2) {
+    strip.setPixelColor(i, 0); 
+  }
+  strip.show(); 
+}
